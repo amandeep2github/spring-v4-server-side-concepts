@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jms="http://www.springframework.org/schema/jms"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-3.0.xsd">
+
+   
+    <!-- A destination in ActiveMQ -->
+    <!-- <bean id="destination" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="${broker.topic}" />
+    </bean> -->
+
+	<!-- A cached connection to wrap the ActiveMQ connection -->
+   <!--  <bean id="connectionFactory"
+        class="org.apache.activemq.ActiveMQConnectionFactory"
+        p:brokerURL="${spring.activemq.broker-url}"  /> -->
+        
+    <!-- <bean id="connectionFactory2"
+        class="org.apache.activemq.ActiveMQConnectionFactory"
+        p:brokerURL="${spring.activemq.broker-url}"  /> -->
+        
+
+    <!-- A cached connection to wrap the ActiveMQ connection -->
+    <!-- <bean id="cachedConnectionFactory"
+        class="org.springframework.jms.connection.CachingConnectionFactory"
+        p:targetConnectionFactory-ref="connectionFactory2" p:sessionCacheSize="10" /> -->
+
+    <!-- A JmsTemplate instance that uses the cached connection and destination -->
+    <!-- <bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate"
+        p:connectionFactory-ref="connectionFactory2" 
+        p:defaultDestination-ref="destination" 
+        p:pubSubDomain="true"/> -->
+
+    <jms:listener-container 
+        container-type="default" destination-type="durableTopic" concurrency="1" client-id="${broker.topic.durableId}" connection-factory="connectionFactory">
+        <jms:listener ref="myListener" destination="${broker.topic}"
+            subscription="${broker.topic.durableId}" method="handleMessage"  />
+    </jms:listener-container>
+    
+    <bean id="myListener" class="learn.spring.jms.DurableSubscriber" />
+    
+
+</beans>
